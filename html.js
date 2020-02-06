@@ -18,7 +18,7 @@ module.exports = function (title,content){
     ${content}
     </main>
     <footer>
-        <h4>End of page</h4>
+        <h4>^</h4>
     </footer>
     
     <script src="main.js"></script>
