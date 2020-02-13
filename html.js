@@ -14,6 +14,9 @@ module.exports = function (title,content){
     <header>
         <h1>Mitt flöde</h1>
     </header>
+    <a href="profil"> Profil </a>
+    <a href="login"> Logga ut </a>
+    <a href="nytt"> Nytt inlägg </a>
     <main>
     ${content}
     </main>

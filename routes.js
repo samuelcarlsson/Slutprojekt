@@ -5,9 +5,9 @@ module.exports = function(app){
     const objectId = require('mongodb').ObjectID;
     const render = require("./html")
 
-
 app.get("/index", async function(req,res){
     try {
+        
         const main = await app.posts.find().toArray()
 
         console.log(main)
@@ -16,7 +16,9 @@ app.get("/index", async function(req,res){
         return `
         <h2>${inlägg.text}</h2><hr>
         <h3>${inlägg.bild}</h3><hr>
-        <a href="/index/delete/${inlägg._id}"> Delete </a>          
+        <a href="/index/delete/${inlägg._id}"> Delete </a>
+        <a href="/index/edit/${inlägg._id}"> Edit </a> 
+        
         `               
         })
         
@@ -33,7 +35,7 @@ app.get("/index", async function(req,res){
 
 
 app.get("/login",function(req,res){
-    res.sendFile(__dirname+"/main.html");
+    res.sendFile(__dirname+"/login.html");
 });
 
 app.post("/login",function(req,res){
@@ -58,7 +60,7 @@ app.post("/nytt", async function(req,res){
 
 app.get("/index/delete/:id",async function(req,res){
     try {
-        let id = req.params.id
+        const id = req.params.id
         await app.posts.deleteOne({"_id":objectId(id)})
         res.redirect("/index")
     } catch (error) {
@@ -66,11 +68,39 @@ app.get("/index/delete/:id",async function(req,res){
     }
 })
 
-app.get("index/edit/:id",async function(req,res){
-    
+app.get("/index/edit/:id",async function(req,res){
+    try {
+        const id = req.params.id
+        const inlägg = await app.posts.findOne({"_id":objectId(id)})
+
+        let html = `
+        <form action="/index/update" method="post">
+        <input type="text" name="text" value = "${inlägg.text}" placeholder="text">
+        <br>
+        <input type="file" accept="image/*" name="picture" value = "${inlägg.bild}" placeholder="picture">
+        <br>
+        <input type="hidden" name="id" value="${id}">
+        <input type="submit" value="save post">
+        </form>
+        `;
+        res.send(render("Edit",html))
+    } catch (error) {
+        res.send("Edit error")
+    }
 })
 
-
+app.post("/index/update", async function(req,res){
+    try {
+        const id = req.body.id
+        const body = req.body
+        delete body.id
+        await app.posts.updateOne({"_id":objectId(id)},{$set:body})
+        res.redirect("/index")
+    
+    } catch (error) {
+        res.send("Error")
+    }
+});
 
 
 }

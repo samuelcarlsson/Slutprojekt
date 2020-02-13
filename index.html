@@ -4,30 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link href="style.css" rel="stylesheet">
     <title>Nytt inlägg</title>
     <style>
     body{        
         background-color:rgb(96, 156, 136);
     }
     input{
-        font-family: Georgia;
+        font-family: Verdana;
         display:block;
         padding:1.2%;
-        width:65%;
+        width:35%;
         margin:auto;
         margin-top:17px;
     }
-    
-    
+    #t{
+        height: 55px;
+        width: 55%;
+    }
     </style>
 </head>
 <body>
     <form action="/nytt" method="post">
-    <input type="text" name="text" placeholder="Text...">
-    <input type="file" name="file">
+    <input id="t" type="text" name="text" placeholder="Text...">
+    <input type="file" accept="image/*" name="image" >
     <input type="submit" value="Skicka inlägg">
     </form>
-    
+        
 </body>
 </html>
