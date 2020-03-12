@@ -1,9 +1,13 @@
 
-module.exports = function(app){
+module.exports = function(app,users,email){
 
     const bcrypt = require('bcryptjs')
     const objectId = require('mongodb').ObjectID;
     const render = require("./html")
+    const login = require("./login")
+    const upload = require('express-fileupload')
+    const secret = require("./secret")
+    const jwt = require('jsonwebtoken')
 
 app.get("/index", async function(req,res){
     try {
@@ -13,11 +17,13 @@ app.get("/index", async function(req,res){
         console.log(main)
         let html = main.reverse().map(function(inlägg){
         
-        return `
-        <h2>${inlägg.text}</h2><hr>
-        <h3>${inlägg.bild}</h3><hr>
+        return ` 
+        <h3>${inlägg.user}</h3>       
+        <h2>${inlägg.text}</h2>
+        <img src = '${inlägg.image}'>
         <a href="/index/delete/${inlägg._id}"> Delete </a>
-        <a href="/index/edit/${inlägg._id}"> Edit </a> 
+        <a href="/index/edit/${inlägg._id}"> Edit</a><hr>
+        
         
         `               
         })
@@ -38,23 +44,28 @@ app.get("/login",function(req,res){
     res.sendFile(__dirname+"/login.html");
 });
 
-app.post("/login",function(req,res){
+app.post("/login",login,function(req,res){
     res.redirect("/index")
 })
 
 
-
+app.get("/profil", async function(req,res){
+    res.sendFile(__dirname+"/profil.html")
+})
 
 
 app.get("/nytt", async function(req,res){
     res.sendFile(__dirname+"/index.html")
 })
-app.post("/nytt", async function(req,res){
+app.post("/nytt",getUser, async function(req,res){
     try {           
-        await app.posts.insertOne(req.body)
+        
+        req.files.image.mv(__dirname+"/images/"+req.files.image.name)
+        await app.posts.insertOne({text:req.body.text,image:req.files.image.name,user:req.user})
         res.redirect("/index")                               
     } catch (error) {            
-        res.send("creating error")
+        app.posts.insertOne(req.body)
+        res.redirect("/index")
     }
 }) 
 
@@ -77,10 +88,10 @@ app.get("/index/edit/:id",async function(req,res){
         <form action="/index/update" method="post">
         <input type="text" name="text" value = "${inlägg.text}" placeholder="text">
         <br>
-        <input type="file" accept="image/*" name="picture" value = "${inlägg.bild}" placeholder="picture">
+        <input type="file" accept="image/*" name="picture" value = "${inlägg.image}" placeholder="picture">
         <br>
         <input type="hidden" name="id" value="${id}">
-        <input type="submit" value="save post">
+        <input type="submit" value="Skicka inlägg">
         </form>
         `;
         res.send(render("Edit",html))
@@ -102,5 +113,32 @@ app.post("/index/update", async function(req,res){
     }
 });
 
+app.get("/redigera", async function(req,res){
+    res.sendFile(__dirname + "/redigera.html")
+})
+app.post("/redigera", async function(req,res){
+    try {           
+        req.files.image.mv(__dirname+"/images/"+req.files.image.name)
+        await images.insertOne(__dirname + "/profil.html")
+        res.redirect("/index")                               
+    } catch (error) {            
+        images.insertOne(req.body)
+        res.redirect("/index")
+    }
+}) 
+async function getUser(req,res,next){
+    
+    try {
+        let token = req.cookies.token;
+        token = await jwt.verify(token,secret);
+        req.user = token.email;
+        console.log(token);
+        next(); 
+    } catch (error) {
+        res.send("auth error");
+    }
 
 }
+
+}
+

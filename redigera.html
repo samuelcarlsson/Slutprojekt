@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Nytt inlägg</title>
+    <title>Redigera Profil</title>
     <style>
     body{        
-        background-color:rgb(96, 156, 136);
+        background-color:rgb(105, 79, 221);
     }
     input{
         font-family: Verdana;
@@ -21,13 +21,16 @@
         height: 55px;
         width: 55%;
     }
+    h4{
+        margin-left:615px;
+    }
     </style>
 </head>
 <body>
-    <form action="/nytt" method="post" enctype="multipart/form-data">
-    <input id="t" type="text" name="text" placeholder="Text...">
+    <form action="/redigera" method="post" enctype="multipart/form-data">       
+    <h4>Välj Profilbild</h4>
     <input type="file" accept="image/*" name="image" >
-    <input type="submit" value="Skicka inlägg">
+    <input type="submit" value="Spara Profil">
     </form>
         
 </body>
